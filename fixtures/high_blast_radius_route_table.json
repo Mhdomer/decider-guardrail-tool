@@ -1,0 +1,39 @@
+{
+  "SchemaVersion": "2018-10-08",
+  "Id": "arn:aws:securityhub:us-east-1:111122223333:subscription/aws-foundational-security-best-practices/v/1.0.0/EC2.18/finding/f-blast-radius-03",
+  "ProductArn": "arn:aws:securityhub:us-east-1::product/aws/securityhub",
+  "GeneratorId": "aws-foundational-security-best-practices/v/1.0.0/EC2.18",
+  "AwsAccountId": "111122223333",
+  "Types": [
+    "Software and Configuration Checks/AWS Security Best Practices"
+  ],
+  "Severity": {
+    "Label": "HIGH",
+    "Normalized": 75
+  },
+  "Compliance": {
+    "Status": "FAILED",
+    "RelatedRequirements": [
+      "NIST SP 800-53 Rev. 5/SC-7",
+      "PCI DSS v4.0/1.2.1",
+      "SOC 2/CC6.6",
+      "CIS AWS Foundations Benchmark v1.4.0/5.1"
+    ]
+  },
+  "Title": "EC2.18 Security groups should only allow unrestricted incoming traffic for authorized ports",
+  "Description": "Non-compliant security group associated with entire VPC route table discovered with permissive CIDR routes.",
+  "Resources": [
+    {
+      "Type": "AwsEc2RouteTable",
+      "Id": "arn:aws:ec2:us-east-1:111122223333:route-table/rtb-core-vpc-01",
+      "Partition": "aws",
+      "Region": "us-east-1",
+      "Details": {
+        "Other": {
+          "VpcId": "vpc-0123456789abcdef0",
+          "Scope": "VPC_WIDE"
+        }
+      }
+    }
+  ]
+}
