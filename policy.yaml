@@ -1,0 +1,52 @@
+# Aegis-2B Cloud DevSecOps Policy-as-Code Configuration
+# Specifies safety boundaries, circuit breaker risk thresholds, and tool permissions
+# for autonomous AI agents operating within AWS cloud infrastructure.
+
+version: "1.0"
+environment: "production"
+target_account: "111122223333"
+default_region: "us-east-1"
+
+circuit_breaker:
+  # Sub-second local guardrail model (Strands Decider 2B)
+  model: "strands-decider-2b:v1"
+  # Risk threshold: Any action with confidence < 0.85 fails closed
+  risk_threshold: 0.85
+  # Always fail-closed on uncertainty or runtime error
+  fail_closed_on_error: true
+  nominal_latency_budget_ms: 150
+
+policies:
+  # 1. Automated Remediation Whitelist (Isolated Blast Radius)
+  # Safe to execute without human intervention in sub-second time
+  auto_permit:
+    - "ec2:RevokeSecurityGroupIngress"
+    - "ec2:AuthorizeSecurityGroupIngress"
+    - "s3:PutBucketPolicy"
+    - "wafv2:UpdateIPSet"
+
+  # 2. Destructive Actions (Strictly Halted on Autonomous Agents)
+  # Prevents adversarial prompt injection and destructive hallucinations
+  always_halt:
+    - "ec2:DeleteSecurityGroup"
+    - "ec2:TerminateInstances"
+    - "rds:DeleteDBInstance"
+    - "rds:DeleteDBCluster"
+    - "s3:DeleteBucket"
+    - "dynamodb:DeleteTable"
+    - "iam:DeleteRole"
+
+  # 3. High Blast-Radius Actions (SecOps Break-Glass MFA Required)
+  # Exceeds isolated boundary; requires emergency 6-digit operator token
+  require_break_glass_mfa:
+    - "ec2:ReplaceRoute"
+    - "ec2:CreateRoute"
+    - "ec2:DeleteRoute"
+    - "iam:AttachRolePolicy"
+    - "iam:PutRolePolicy"
+
+server:
+  # In-VPC HTTP Sidecar / Daemon endpoint for LangChain / Bedrock agents
+  host: "127.0.0.1"
+  port: 8765
+  enable_audit_logging: true
